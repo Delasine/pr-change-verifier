@@ -179,3 +179,14 @@ test("renderGitHubAnnotations points to each uncovered changed line", () => {
     "::warning file=src/a%2Cb.js,line=6,title=Changed line is not covered::No test execution was recorded for this added line.",
   ]);
 });
+
+
+test("CI integration fixture reports line-level coverage from runner-style LCOV paths", () => {
+  const result = analyzeChanges(
+    [{ filename: "test/integration-check.js", status: "added", patch: "@@ -0,0 +1 @@\n+export const verified = true;" }],
+    parseLcov("SF:/home/runner/work/repo/repo/test/integration-check.js\nDA:1,2\nend_of_record"),
+  );
+  assert.equal(result.covered, 1);
+  assert.equal(result.uncovered, 0);
+  assert.equal(result.measuredCoverage, 100);
+});
