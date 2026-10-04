@@ -196,3 +196,9 @@ test("renderGitHubAnnotations points to each uncovered changed line", () => {
     "::warning file=src/a%2Cb.js,line=6,title=Changed line is not covered::No test execution was recorded for this added line.",
   ]);
 });
+
+
+test("parseLcov trims surrounding whitespace from source paths", () => {
+  const coverage = parseLcov("SF: src/example.js \nDA:1,1\nend_of_record");
+  assert.equal(coverage.has("src/example.js"), true);
+});
