@@ -17,10 +17,12 @@ const repository = requiredEnv("GITHUB_REPOSITORY");
 const minimumCoverage = parseMinimumCoverage(process.env.INPUT_MIN_COVERAGE ?? "");
 const excludePatterns = parseExcludePatterns(process.env.INPUT_EXCLUDE_PATHS ?? "");
 const event = JSON.parse(await readFile(eventPath, "utf8"));
-const pullRequestNumber = event.pull_request?.number;
+const requestedPullNumber = process.env.INPUT_PR_NUMBER?.trim();
+const pullRequestNumber = event.pull_request?.number
+  ?? (requestedPullNumber ? Number(requestedPullNumber) : null);
 
-if (!pullRequestNumber) {
-  throw new Error("This action must run for a pull_request event.");
+if (!Number.isSafeInteger(pullRequestNumber) || pullRequestNumber < 1) {
+  throw new Error("A valid pull request number is required from a pull_request event or pr-number input.");
 }
 
 const [lcovContent, changes] = await Promise.all([
