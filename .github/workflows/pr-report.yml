@@ -43,9 +43,8 @@ jobs:
               throw new Error("Only successful pull_request workflow runs may publish reports.");
             }
 
-            const associatedPull = run.pull_requests?.find((pull) =>
-              pull.base?.repo?.full_name === `${context.repo.owner}/${context.repo.repo}` &&
-              pull.head?.sha === run.head_sha
+            const associatedPull = run.pull_requests?.find(
+              (pull) => pull.head?.sha === run.head_sha
             );
             if (!associatedPull) {
               throw new Error("The workflow run is not associated with a matching pull request head.");
