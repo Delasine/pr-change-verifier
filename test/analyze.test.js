@@ -133,7 +133,7 @@ test("renderMarkdown makes measured coverage and limitations explicit", () => {
     excludedFiles: [],
   });
 
-  assert.match(markdown, /\| 6 \| 3 \| 1 \| 2 \| 75\.0% \|/);
+  assert.match(markdown, /\| 6 \| 4 \| 3 \| 1 \| 2 \| 75\.0% \|/);
   assert.match(markdown, /src\/file\\\|name\.js/);
   assert.match(markdown, /No matching coverage data/);
   assert.match(markdown, /Could not inspect diff patch/);
@@ -152,7 +152,7 @@ test("coverage percentages retain one decimal place", () => {
     excludedFiles: [],
   });
 
-  assert.match(markdown, /\| 3 \| 1 \| 2 \| 0 \| 33\.3% \|/);
+  assert.match(markdown, /\| 3 \| 3 \| 1 \| 2 \| 0 \| 33\.3% \|/);
   assert.match(markdown, /\| src\/partial\.js \| 1 \| 2 \| 0 \| 33\.3% \|/);
 });
 
@@ -195,4 +195,10 @@ test("renderGitHubAnnotations points to each uncovered changed line", () => {
     "::warning file=src/a%2Cb.js,line=5,title=Changed line is not covered::No test execution was recorded for this added line.",
     "::warning file=src/a%2Cb.js,line=6,title=Changed line is not covered::No test execution was recorded for this added line.",
   ]);
+});
+
+
+test("parseLcov trims surrounding whitespace from source paths", () => {
+  const coverage = parseLcov("SF: src/example.js \nDA:1,1\nend_of_record");
+  assert.equal(coverage.has("src/example.js"), true);
 });
