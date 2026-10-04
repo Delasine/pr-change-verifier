@@ -1,6 +1,7 @@
 import { appendFile, readFile } from "node:fs/promises";
 import { randomUUID } from "node:crypto";
 import { resolve } from "node:path";
+import { readLcovFile } from "./lcov-file.js";
 import {
   analyzeChanges,
   isBelowCoverageThreshold,
@@ -26,7 +27,7 @@ if (!Number.isSafeInteger(pullRequestNumber) || pullRequestNumber < 1) {
 }
 
 const [lcovContent, changes] = await Promise.all([
-  readFile(lcovPath, "utf8"),
+  readLcovFile(lcovPath),
   getPullRequestFiles(repository, pullRequestNumber, token),
 ]);
 
