@@ -34,7 +34,11 @@ jobs:
         uses: actions/github-script@v7
         with:
           script: |
-            const run = context.payload.workflow_run;
+            const eventRun = context.payload.workflow_run;
+            const { data: run } = await github.rest.actions.getWorkflowRun({
+              ...context.repo,
+              run_id: eventRun.id,
+            });
             if (run.event !== "pull_request" || run.conclusion !== "success") {
               throw new Error("Only successful pull_request workflow runs may publish reports.");
             }
