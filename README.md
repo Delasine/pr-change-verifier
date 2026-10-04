@@ -60,7 +60,7 @@ jobs:
 
 此仓库的 `.github/workflows/ci.yml` 会在 PR 上执行测试并用固定版本的 `c8` 生成 LCOV，再运行 Action 验证报告和 annotation；为了避免将可写评论 token 暴露给未经信任的 PR 代码，PR 验证 workflow 不发布评论。如需端到端验证评论，请从受信任的默认分支运行手动 dispatch workflow，而不要在执行 PR 代码的 job 中授予 `issues: write`。
 
-本仓库提供 `.github/workflows/comment-test.yml` 作为安全的手动评论验证示例：它只允许从 `main` 运行，检出并执行可信任的 `main` 内容，再对指定 PR 发布或更新报告。可在 Actions 页面运行 **Trusted comment integration test** 并输入 PR 编号；不要对执行 PR 代码的 job 授予 `issues: write`。
+本仓库提供 `.github/workflows/comment-test.yml` 作为安全的手动评论验证示例：它只允许从 `main` 运行，检出并执行可信任的 `main` 内容，再对指定 PR 发布或更新报告。可在 Actions 页面运行 **Trusted comment integration test** 并输入 PR 编号；不要对执行 PR 代码的 job 授予写权限。
 
 ### 权限说明
 
