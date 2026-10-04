@@ -134,14 +134,15 @@ export function analyzeChanges(changes, coverage, options = {}) {
 }
 
 export function renderMarkdown(result) {
+  const measured = result.covered + result.uncovered;
   const coverage = formatCoverage(result.covered, result.uncovered);
   const lines = [
     "<!-- pr-change-verifier -->",
     "## PR change verification",
     "",
-    "| Changed lines | Covered | Uncovered | Not measured | Changed-line coverage |",
-    "| ---: | ---: | ---: | ---: | ---: |",
-    `| ${result.covered + result.uncovered + result.unmeasured} | ${result.covered} | ${result.uncovered} | ${result.unmeasured} | ${coverage} |`,
+    "| Changed lines | Measured | Covered | Uncovered | Not measured | Changed-line coverage |",
+    "| ---: | ---: | ---: | ---: | ---: | ---: |",
+    `| ${result.covered + result.uncovered + result.unmeasured} | ${measured} | ${result.covered} | ${result.uncovered} | ${result.unmeasured} | ${coverage} |`,
     "",
     "Coverage is based on the supplied LCOV report and only counts added lines with recorded coverage data.",
   ];
