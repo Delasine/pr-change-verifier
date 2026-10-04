@@ -5,7 +5,7 @@ export function parseLcov(content) {
 
   for (const line of content.split(/\r?\n/)) {
     if (line.startsWith("SF:")) {
-      currentFile = normalizePath(line.slice(3));
+      currentFile = normalizePath(line.slice(3).trim());
       if (!currentFile) throw new Error("LCOV contains an empty source file path.");
       if (!files.has(currentFile)) files.set(currentFile, new Map());
       continue;
@@ -134,9 +134,7 @@ export function analyzeChanges(changes, coverage, options = {}) {
 }
 
 export function renderMarkdown(result) {
-  const coverage = result.measuredCoverage === null
-    ? "N/A"
-    : `${Math.round(result.measuredCoverage)}%`;
+  const coverage = formatCoverage(result.covered, result.uncovered);
   const lines = [
     "<!-- pr-change-verifier -->",
     "## PR change verification",
@@ -157,10 +155,7 @@ export function renderMarkdown(result) {
       "| File | Covered | Uncovered | Not measured | Coverage |",
       "| --- | ---: | ---: | ---: | ---: |",
       ...result.files.map((file) => {
-        const fileMeasured = file.covered + file.uncovered;
-        const fileCoverage = fileMeasured === 0
-          ? "N/A"
-          : `${Math.round((file.covered / fileMeasured) * 100)}%`;
+        const fileCoverage = formatCoverage(file.covered, file.uncovered);
         return `| ${escapeTableCell(file.filename)} | ${file.covered} | ${file.uncovered} | ${file.unmeasured} | ${fileCoverage} |`;
       }),
       "",
@@ -252,6 +247,11 @@ function normalizePath(value) {
 
 function formatFiles(files) {
   return files.map((file) => `\`${file.replaceAll("`", "\\`")}\``).join(", ");
+}
+
+function formatCoverage(covered, uncovered) {
+  const measured = covered + uncovered;
+  return measured === 0 ? "N/A" : `${((covered / measured) * 100).toFixed(1)}%`;
 }
 
 function escapeTableCell(value) {

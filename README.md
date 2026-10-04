@@ -58,9 +58,7 @@ jobs:
 
 后续步骤可读取 `${{ steps.<action-step-id>.outputs.coverage }}`、`covered-lines`、`uncovered-lines`、`unmeasured-lines`、`excluded-lines`、`changed-files` 和 JSON `report`。如果工作流需要引用 outputs，请为 Action step 设置 `id`。
 
-此仓库的 `.github/workflows/ci.yml` 会在 PR 上执行测试并用固定版本的 `c8` 生成 LCOV，再运行 Action 验证报告和 annotation；为了避免将可写评论 token 暴露给未经信任的 PR 代码，PR 验证 workflow 不发布评论。如需端到端验证评论，请从受信任的默认分支运行手动 dispatch workflow，而不要在执行 PR 代码的 job 中授予 `issues: write`。
-
-本仓库提供 `.github/workflows/comment-test.yml` 作为安全的手动评论验证示例：它只允许从 `main` 运行，检出并执行可信任的 `main` 内容，再对指定 PR 发布或更新报告。可在 Actions 页面运行 **Trusted comment integration test** 并输入 PR 编号；不要对执行 PR 代码的 job 授予写权限。
+此仓库的 `.github/workflows/ci.yml` 会在 PR 上执行测试并用固定版本的 `c8` 生成 LCOV，随后上传短期保留的报告 artifact。`.github/workflows/pr-report.yml` 只在该 CI 成功结束后运行：它只检出可信任的 `main` 代码，验证触发 CI 的 PR head 仍是最新版本，再从**同一次 workflow run**下载 LCOV artifact 并更新 PR 报告。PR 运行本身只拥有只读权限；写评论权限仅存在于不执行 PR 代码的可信任报告工作流。
 
 ### 权限说明
 
@@ -80,6 +78,8 @@ npm test
 
 - GitHub 文件列表 API 未提供 diff patch（例如过大的变更或二进制文件）时，会单独列出，不把未知情况误报成未覆盖。
 - 只统计 LCOV 中明确记录的新增行；没有对应文件或行记录时标为“未测量”。
+- 从 PR workflow 下载的 LCOV 被视为不可信输入；报告文件限制为 20 MiB 且必须是普通文件，可信任 workflow 不执行 artifact 内的代码。
+- 可信任报告 workflow 会校验 artifact 来自触发它的同一 CI run、关联 PR head 仍未变化、且仅有一个不超过 20 MiB 的 LCOV artifact。
 - 当多个 LCOV 文件都可能对应同一仓库路径时，不猜测映射，相关行标为“未测量”。
 - 未覆盖代码行会作为 GitHub warning annotation 显示；GitHub 对 annotations 数量有限制，超大 PR 应结合 PR Summary 阅读完整结果。
 - MVP 目前不自动判断业务风险、测试是否充分或代码是否正确。

@@ -32,3 +32,12 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           lcov-file: coverage/lcov.info
           comment: "false"
+
+      - name: Upload coverage for trusted PR report
+        if: github.event_name == 'pull_request'
+        uses: actions/upload-artifact@v4
+        with:
+          name: pr-change-verifier-lcov
+          path: coverage/lcov.info
+          if-no-files-found: error
+          retention-days: 1

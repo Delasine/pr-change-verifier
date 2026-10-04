@@ -43,6 +43,7 @@ test("parseLcov merges repeated file records and preserves uncovered lines", () 
 test("parseLcov rejects empty or malformed reports instead of returning success-shaped results", () => {
   assert.throws(() => parseLcov(""), /no source file records/);
   assert.throws(() => parseLcov("SF:src/example.js\nend_of_record"), /no line coverage entries/);
+  assert.throws(() => parseLcov("SF:   \nDA:1,1"), /empty source file path/);
   assert.throws(
     () => parseLcov("SF:src/example.js\nDA:0,1\nend_of_record"),
     /invalid line coverage entry/,
@@ -132,11 +133,27 @@ test("renderMarkdown makes measured coverage and limitations explicit", () => {
     excludedFiles: [],
   });
 
-  assert.match(markdown, /\| 6 \| 3 \| 1 \| 2 \| 75% \|/);
+  assert.match(markdown, /\| 6 \| 3 \| 1 \| 2 \| 75\.0% \|/);
   assert.match(markdown, /src\/file\\\|name\.js/);
   assert.match(markdown, /No matching coverage data/);
   assert.match(markdown, /Could not inspect diff patch/);
   assert.match(markdown, /Per-file results/);
+});
+
+test("coverage percentages retain one decimal place", () => {
+  const markdown = renderMarkdown({
+    covered: 1,
+    uncovered: 2,
+    unmeasured: 0,
+    measuredCoverage: 100 / 3,
+    files: [{ filename: "src/partial.js", covered: 1, uncovered: 2, unmeasured: 0 }],
+    filesWithoutPatch: [],
+    filesWithoutCoverage: [],
+    excludedFiles: [],
+  });
+
+  assert.match(markdown, /\| 3 \| 1 \| 2 \| 0 \| 33\.3% \|/);
+  assert.match(markdown, /\| src\/partial\.js \| 1 \| 2 \| 0 \| 33\.3% \|/);
 });
 
 test("exclude path globs omit generated files and count excluded lines", () => {
