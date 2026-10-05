@@ -16,6 +16,10 @@ inputs:
     description: Fail the action when at least one changed line is measured but uncovered.
     required: false
     default: "false"
+  fail-on-unmeasured:
+    description: Fail the action when at least one added line has no matching coverage data.
+    required: false
+    default: "false"
   comment:
     description: Create or update a summary comment on the pull request.
     required: false
@@ -61,6 +65,7 @@ runs:
         INPUT_PR_NUMBER: ${{ inputs.pr-number }}
         INPUT_LCOV_FILE: ${{ inputs.lcov-file }}
         INPUT_FAIL_ON_UNCOVERED: ${{ inputs.fail-on-uncovered }}
+        INPUT_FAIL_ON_UNMEASURED: ${{ inputs.fail-on-unmeasured }}
         INPUT_COMMENT: ${{ inputs.comment }}
         INPUT_MIN_COVERAGE: ${{ inputs.min-coverage }}
         INPUT_EXCLUDE_PATHS: ${{ inputs.exclude-paths }}

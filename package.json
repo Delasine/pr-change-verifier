@@ -1,6 +1,6 @@
 {
   "name": "pr-change-verifier",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "private": true,
   "description": "A GitHub Action that reports test coverage for lines added in a pull request.",
   "type": "module",

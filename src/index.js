@@ -9,6 +9,7 @@ import {
   parseLcov,
   renderGitHubAnnotations,
   renderMarkdown,
+  shouldFailOnUnmeasured,
 } from "./analyze.js";
 
 const token = requiredEnv("INPUT_GITHUB_TOKEN");
@@ -43,6 +44,11 @@ if (process.env.INPUT_COMMENT !== "false") {
 
 if (process.env.INPUT_FAIL_ON_UNCOVERED === "true" && result.uncovered > 0) {
   console.error(`Found ${result.uncovered} changed line(s) without test coverage.`);
+  process.exitCode = 1;
+}
+
+if (shouldFailOnUnmeasured(result, process.env.INPUT_FAIL_ON_UNMEASURED === "true")) {
+  console.error(`Found ${result.unmeasured} changed line(s) without matching coverage data.`);
   process.exitCode = 1;
 }
 
