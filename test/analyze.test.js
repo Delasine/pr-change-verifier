@@ -8,6 +8,7 @@ import {
   parseLcov,
   renderGitHubAnnotations,
   renderMarkdown,
+  shouldFailOnUnmeasured,
 } from "../src/analyze.js";
 
 test("parseAddedLines counts inserted lines and context, not deletions", () => {
@@ -179,6 +180,12 @@ test("minimum coverage threshold fails only when configured and measurable", () 
   assert.equal(isBelowCoverageThreshold({ measuredCoverage: 80 }, 80), false);
   assert.equal(isBelowCoverageThreshold({ measuredCoverage: 90 }, null), false);
   assert.equal(isBelowCoverageThreshold({ measuredCoverage: null }, 0), true);
+});
+
+test("unmeasured added lines fail only when fail-on-unmeasured is enabled", () => {
+  assert.equal(shouldFailOnUnmeasured({ unmeasured: 2 }, true), true);
+  assert.equal(shouldFailOnUnmeasured({ unmeasured: 0 }, true), false);
+  assert.equal(shouldFailOnUnmeasured({ unmeasured: 2 }, false), false);
 });
 
 test("renderGitHubAnnotations points to each uncovered changed line", () => {

@@ -192,6 +192,10 @@ export function isBelowCoverageThreshold(result, threshold) {
   return result.measuredCoverage === null || result.measuredCoverage < threshold;
 }
 
+export function shouldFailOnUnmeasured(result, failOnUnmeasured) {
+  return failOnUnmeasured && result.unmeasured > 0;
+}
+
 export function renderGitHubAnnotations(result) {
   return result.files.flatMap((file) =>
     file.changedLines

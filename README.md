@@ -11,7 +11,7 @@
 - Reports added lines as **covered**, **uncovered**, or **not measured**.
 - Shows aggregate and per-file changed-line coverage.
 - Emits GitHub warning annotations for uncovered added lines.
-- Supports an optional minimum-coverage threshold and glob-based path exclusions.
+- Supports optional minimum-coverage and unmeasured-line failure gates, plus glob-based path exclusions.
 - Writes a job summary and exposes numeric and JSON Action outputs.
 - Can create or update a pull request comment.
 - Does not upload source code to an external service or call an AI service.
@@ -42,7 +42,7 @@ jobs:
           node-version: 24
       # Replace with your test command if needed; this generates coverage/lcov.info.
       - run: npx --yes c8@10.1.3 --reporter=lcov --reporter=text npm test
-      - uses: Delasine/pr-change-verifier@v0.1.0
+      - uses: Delasine/pr-change-verifier@v0.2.0
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           lcov-file: coverage/lcov.info
@@ -70,9 +70,10 @@ Never grant `issues: write` or `pull-requests: write` to a job that checks out o
 | `comment` | No | `"true"` | Create or update the report comment. |
 | `min-coverage` | No | `""` | Minimum measured changed-line coverage percentage (0–100). Empty disables the threshold. |
 | `fail-on-uncovered` | No | `"false"` | Fail when at least one measured added line is uncovered. |
+| `fail-on-unmeasured` | No | `"false"` | Fail when at least one added line has no matching coverage data in the LCOV report. |
 | `exclude-paths` | No | `""` | Comma- or newline-separated glob patterns (`*`, `**`, `?`) to exclude files. |
 
-The threshold denominator includes only added lines with LCOV data. If no added lines can be measured, a configured threshold fails rather than treating missing data as success. Excluded lines are reported separately.
+The threshold denominator includes only added lines with LCOV data. If no added lines can be measured, a configured threshold fails rather than treating missing data as success. Set `fail-on-unmeasured: "true"` to make any parsed added line without a corresponding LCOV line fail the action; it is disabled by default. Files for which GitHub supplies no diff patch are listed separately because their added lines cannot be determined. Excluded lines are reported separately and do not trigger this option.
 
 ### Outputs
 
@@ -105,7 +106,7 @@ Distributed under the [MIT License](LICENSE).
 
 ## 中文说明
 
-PR Change Verifier 是一个 GitHub Action，将 PR 新增代码行与项目已有的 LCOV 覆盖率报告比对，展示已覆盖、未覆盖、未测量行数和逐文件覆盖率，并可生成行级提醒、Job Summary 及 PR 评论。
+PR Change Verifier 是一个 GitHub Action，将 PR 新增代码行与项目已有的 LCOV 覆盖率报告比对，展示已覆盖、未覆盖、未测量行数和逐文件覆盖率，并可生成行级提醒、Job Summary 及 PR 评论。可选开启 `fail-on-unmeasured: "true"`，在新增代码行缺少覆盖率记录时让检查失败（默认关闭）。
 
 **安全建议：**PR 检查工作流保持只读并设置 `comment: "false"`。若要发布评论，请使用可信任的 `workflow_run` 工作流：只运行默认分支代码，校验 PR head 和 artifact 后再写评论。不要让执行外部 PR 代码的 job 获得写权限。
 
