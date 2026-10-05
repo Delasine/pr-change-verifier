@@ -85,7 +85,7 @@ jobs:
 
       - name: Download coverage from the exact PR workflow run
         if: steps.validate.outputs.should-report == 'true'
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: pr-change-verifier-lcov
           path: coverage
