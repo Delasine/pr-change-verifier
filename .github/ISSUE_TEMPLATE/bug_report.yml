@@ -1,0 +1,40 @@
+name: Bug report
+description: Report a reproducible problem with PR Change Verifier.
+title: "[Bug]: "
+labels:
+  - bug
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Do not include credentials, private source code, or personal data.
+        Report suspected security vulnerabilities privately using the repository's Security tab.
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+      description: What did you expect the action to do?
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual behavior
+      description: What happened? Include a redacted log excerpt if useful.
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Minimal reproduction
+      description: Include the relevant workflow inputs and a small redacted diff/LCOV example.
+      render: text
+    validations:
+      required: true
+  - type: input
+    id: environment
+    attributes:
+      label: Environment
+      description: Action version, runner OS, and Node.js version.
+    validations:
+      required: true
