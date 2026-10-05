@@ -31,7 +31,7 @@ jobs:
 
       - name: Validate workflow run and pull request
         id: validate
-        uses: actions/github-script@v7
+        uses: actions/github-script@v9
         with:
           script: |
             const eventRun = context.payload.workflow_run;
